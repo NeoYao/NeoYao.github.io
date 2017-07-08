@@ -6,13 +6,13 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Java服务CPU飙到99%问题排查 | Hexo</title>
+  <title>Java服务CPU飙到99%问题排查 | Neo的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="一大早刚来到公司工位上，电话响起来了，一看是运维老湿打过来到，紧张的接起电话，小心脏扑通扑通跳。“小路啊，你有个服务CPU飙到99%，现场给你保留了，赶紧看看吧！”挂了电话一看短信，果然有告警过来了！还好服务没有重启，现场保留了，赶紧上到服务器上看看。看到是一个用户评分的服务，六台机器的其中一台CPU飙升，下面介绍一下问题排查的过程和解决方法。 一、查看导致CPU飙升的线程首先需要定位到是服务里的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java服务CPU飙到99%问题排查">
 <meta property="og:url" content="http://yoursite.com/2016/08/06/Java服务CPU飙到99-问题排查/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="Neo的博客">
 <meta property="og:description" content="一大早刚来到公司工位上，电话响起来了，一看是运维老湿打过来到，紧张的接起电话，小心脏扑通扑通跳。“小路啊，你有个服务CPU飙到99%，现场给你保留了，赶紧看看吧！”挂了电话一看短信，果然有告警过来了！还好服务没有重启，现场保留了，赶紧上到服务器上看看。看到是一个用户评分的服务，六台机器的其中一台CPU飙升，下面介绍一下问题排查的过程和解决方法。 一、查看导致CPU飙升的线程首先需要定位到是服务里的">
 <meta property="og:image" content="http://yoursite.com/images/jps.png">
 <meta property="og:image" content="http://yoursite.com/images/top.png">
@@ -23,7 +23,7 @@
 <meta name="twitter:description" content="一大早刚来到公司工位上，电话响起来了，一看是运维老湿打过来到，紧张的接起电话，小心脏扑通扑通跳。“小路啊，你有个服务CPU飙到99%，现场给你保留了，赶紧看看吧！”挂了电话一看短信，果然有告警过来了！还好服务没有重启，现场保留了，赶紧上到服务器上看看。看到是一个用户评分的服务，六台机器的其中一台CPU飙升，下面介绍一下问题排查的过程和解决方法。 一、查看导致CPU飙升的线程首先需要定位到是服务里的">
 <meta name="twitter:image" content="http://yoursite.com/images/jps.png">
   
-    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="Neo的博客" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -50,10 +50,10 @@
 <div class="intrude-less">
 	<header id="header" class="inner">
 		<a href="/" class="profilepic">
-			<img src="null" class="js-avatar">
+			<img src="../img/lufy.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">John Doe</a></h1>
+		  <h1 class="header-author"><a href="/">Neo</a></h1>
 		</hgroup>
 		
 
@@ -61,8 +61,6 @@
 			<ul>
 			
 				<li><a href="/">主页</a></li>
-	        
-				<li><a href="/tags/随笔/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -84,13 +82,7 @@
 		<nav class="header-nav">
 			<div class="social">
 				
-					<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
-		        
-					<a class="weibo" target="_blank" href="#" title="weibo"><i class="icon-weibo"></i></a>
-		        
-					<a class="rss" target="_blank" href="#" title="rss"><i class="icon-rss"></i></a>
-		        
-					<a class="zhihu" target="_blank" href="#" title="zhihu"><i class="icon-zhihu"></i></a>
+					<a class="github" target="_blank" href="https://github.com/NeoYao" title="github"><i class="icon-github"></i></a>
 		        
 			</div>
 		</nav>
@@ -108,15 +100,13 @@
 	<div class="intrude-less">
 		<header id="header" class="inner">
 			<div class="profilepic">
-				<img src="null" class="js-avatar">
+				<img src="../img/lufy.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">John Doe</h1>
+			  <h1 class="header-author js-header-author">Neo</h1>
 			</hgroup>
 			
 			
-			
-				
 			
 				
 			
@@ -125,13 +115,7 @@
 			<nav class="header-nav">
 				<div class="social">
 					
-						<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
-			        
-						<a class="weibo" target="_blank" href="#" title="weibo"><i class="icon-weibo"></i></a>
-			        
-						<a class="rss" target="_blank" href="#" title="rss"><i class="icon-rss"></i></a>
-			        
-						<a class="zhihu" target="_blank" href="#" title="zhihu"><i class="icon-zhihu"></i></a>
+						<a class="github" target="_blank" href="https://github.com/NeoYao" title="github"><i class="icon-github"></i></a>
 			        
 				</div>
 			</nav>
@@ -140,9 +124,7 @@
 				<ul style="width: 50%">
 				
 				
-					<li style="width: 50%"><a href="/">主页</a></li>
-		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 100%"><a href="/">主页</a></li>
 		        
 				</ul>
 			</nav>
@@ -312,7 +294,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2017 John Doe
+    		&copy; 2017 Neo
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -438,34 +420,6 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
 
     
     	<section class="tools-section tools-section-friends" q-show="friends">
-  		
-        <ul class="search-ul">
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接1</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接2</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接3</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接4</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接5</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://localhost:4000/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>友情链接6</a>
-            </li>
-          
-        </ul>
   		
     	</section>
     
