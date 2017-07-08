@@ -42,7 +42,7 @@
 <div class="intrude-less">
 	<header id="header" class="inner">
 		<a href="/" class="profilepic">
-			<img src="../img/lufy.jpg" class="js-avatar">
+			<img src="http://neoyao.github.io/img/lufy.jpg" class="js-avatar">
 		</a>
 		<hgroup>
 		  <h1 class="header-author"><a href="/">Neo</a></h1>
@@ -60,10 +60,6 @@
     		
     			
     			<a q-on="click: openSlider(e, 'innerArchive')" href="javascript:void(0)">所有文章</a>
-    			
-            
-    			
-    			<a q-on="click: openSlider(e, 'friends')" href="javascript:void(0)">友链</a>
     			
             
     			
@@ -92,7 +88,7 @@
 	<div class="intrude-less">
 		<header id="header" class="inner">
 			<div class="profilepic">
-				<img src="../img/lufy.jpg" class="js-avatar">
+				<img src="http://neoyao.github.io/img/lufy.jpg" class="js-avatar">
 			</div>
 			<hgroup>
 			  <h1 class="header-author js-header-author">Neo</h1>
@@ -155,36 +151,37 @@
       
         <h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><p>事务就是一组原子性的SQL操作，或者一个独立的工作单元。如果数据库引擎能够成功的执行一个事务中的全部SQL语句，那么它就会执行这组操作。如果其中有任何一个执行失败，那么所有的语句都不会执行。所以同一个事务中的操作要不全部执行成功，要不全部执行失败。每种存储引擎的事务实现不尽相同，下面主要介绍的都是最常用的MYSQL的InnerDB存储引擎。</p>
 <h2 id="ACID"><a href="#ACID" class="headerlink" title="ACID"></a>ACID</h2><p>ACID是数据库的一组设计原则，强调事务的可靠性设计。ACID对关键的核心业务及数据非常重要，它可以保证在执行失败或机器损坏等条件下，数据不会损坏。除非通过严格的ACID测试，否则空谈事务的概念是不够的。ACID表示原子性（atomicity）、一致性（consistency）、隔离性（isolation）、持久性（durability）。一个良好运行的事务处理系统，必须具备这些标准。</p>
-<p>原子性（atomicity）</p>
+<p><strong>原子性（atomicity）</strong></p>
 <blockquote>
 <p>一个事务必须被视为一个不可分割的最小工作单元，整个事务中的所有操作要么全部提交成功，要么全部失败回滚，对于一个事务来说，不可能只执行其中的一部分操作，这就是事务的原子性</p>
 </blockquote>
-<p>一致性（consistency）</p>
+<p><strong>一致性（consistency）</strong></p>
 <blockquote>
 <p>数据库总是从一个一致性的状态转换到另一个一致性的状态。</p>
 </blockquote>
-<p>隔离性（isolation）</p>
+<p><strong>隔离性（isolation）</strong></p>
 <blockquote>
 <p>通常来说，一个事务所做的修改在最终提交以前，对其他事务是不可见的。</p>
 </blockquote>
-<p>持久性（durability）</p>
+<p><strong>持久性（durability）</strong></p>
 <blockquote>
 <p>一旦事务提交，则其所做的修改不会永久保存到数据库。<br>事务的ACID特性可以保证数据库不会搞丢你的数据，但在实际应用中，要实现这一点非常困难，甚至说是不可能完成的任务。可以想象，要实现完整的ACID势必要有很多性能的损耗，机器资源的损耗，这种处理过程中的安全性也需要数据库系统做更多额外的工作，这也是MYSQL的存储引擎可以发挥优势的地方。</p>
 </blockquote>
-<h2 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h2><p>READ UNCOMMITTED（未提交读）</p>
+<h2 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h2><p><strong>READ UNCOMMITTED（未提交读）</strong></p>
 <blockquote>
 <p>在READ UNCOMMITTED级别，事务中的修改，即使没有提交，对其他事务也都是可见的。事务可以读取未提交的数据，这也被称为脏读（Dirty Read）。这个级别会导致很多问题，从性能上来说，READ UNCOMMITTED不会比其他的级别好太多，但却缺乏其他级别的很多好处，除非真的有非常必要的理由，在实际应用中一般很少使用。</p>
 </blockquote>
 <p>例子：</p>
-<p>READ COMMITTED（提交读）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> * <span class="keyword">form</span> t1 <span class="keyword">where</span> bid = <span class="number">1</span>;</div></pre></td></tr></table></figure>
+<p><strong>READ COMMITTED（提交读）</strong></p>
 <blockquote>
 <p>大多数数据库系统的默认隔离级别都是READ COMMTTED（但MySQL不是）。READ COMMITTED满足前面提到的隔离性的简单定义：一个事务开始时，只能”看见”已经提交的事务所做的修改。换句话说，一个事务从开始直到提交之前，所做的任何修改对其他事务都是不可见的。这个级别有时候叫做不可重复读（nonrepeatble read），因为两次执行同样的查询，可能会得到不一样的结果</p>
 </blockquote>
-<p>REPEATABLE READ(可重复读)</p>
+<p><strong>REPEATABLE READ(可重复读)</strong></p>
 <blockquote>
 <p>REPEATABLE READ解决了脏读的问题。该隔离级别保证了在同一个事务中多次读取同样记录结果是一致的。但是理论上，可重复读隔离级别还是无法解决另外一个幻读（Phantom Read）的问题。所谓幻读，指的是当某个事务在读取某个范围内的记录时，另一个事务又在该范围内插入了新的记录，当之前的事务再次读取该范围的记录时，会产生幻行（Phantom Row）。InnoDB和XtraDB存储引擎通过多版本并发控制（MVCC，Multiversion Concurrency Control）解决了幻读的问题。</p>
 </blockquote>
-<p>SERIALIZABLE（可串行化）</p>
+<p><strong>SERIALIZABLE（可串行化）</strong></p>
 <blockquote>
 <p>SERIALIZABLE是最高的隔离级别。它通过强制事务串行执行，避免了前面说的幻读的问题。简单来说，SERIALIZABLE会在读取每一行数据都加锁，所以可能导致大量的超时和锁争用问题。实际应用中也很少用到这个隔离级别，只有在非常需要确保数据的一致性而且可以接受没有并发的情况下，才考虑采用该级别。</p>
 </blockquote>
@@ -242,62 +239,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2017/07/08/Mysql-锁和事务/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/06/18/hello-world/">Hello World</a>
-    </h1>
-  
-
-        
-        <a href="/2017/06/18/hello-world/" class="archive-article-date">
-  	<time datetime="2017-06-18T10:50:31.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/06/18/hello-world/">展开全文 >></a>
         </p>
       
 
@@ -478,25 +419,17 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
       
       
     
-      
-      
-      
-    
     
 
     <ul style="width: 70%">
     
     
       
-      <li style="width: 33.333333333333336%" q-on="click: openSlider(e, 'innerArchive')"><a href="javascript:void(0)" q-class="active:innerArchive">所有文章</a></li>
+      <li style="width: 50%" q-on="click: openSlider(e, 'innerArchive')"><a href="javascript:void(0)" q-class="active:innerArchive">所有文章</a></li>
       
         
       
-      <li style="width: 33.333333333333336%" q-on="click: openSlider(e, 'friends')"><a href="javascript:void(0)" q-class="active:friends">友链</a></li>
-      
-        
-      
-      <li style="width: 33.333333333333336%" q-on="click: openSlider(e, 'aboutme')"><a href="javascript:void(0)" q-class="active:aboutme">关于我</a></li>
+      <li style="width: 50%" q-on="click: openSlider(e, 'aboutme')"><a href="javascript:void(0)" q-class="active:aboutme">关于我</a></li>
       
         
     </ul>
@@ -560,15 +493,11 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
     
 
     
-    	<section class="tools-section tools-section-friends" q-show="friends">
-  		
-    	</section>
-    
 
     
     	<section class="tools-section tools-section-me" q-show="aboutme">
   	  	
-  	  		<div class="aboutme-wrap" id="js-aboutme">很惭愧&lt;br&gt;&lt;br&gt;只做了一点微小的工作&lt;br&gt;谢谢大家</div>
+  	  		<div class="aboutme-wrap" id="js-aboutme">希望能多一点努力</div>
   	  	
     	</section>
     
