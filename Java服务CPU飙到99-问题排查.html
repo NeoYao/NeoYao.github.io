@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java服务CPU飙到99%问题排查 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一大早刚来到公司工位上，电话响起来了，一看是运维老湿打过来到，紧张的接起电话，小心脏扑通扑通跳。“小路啊，你有个服务CPU飙到99%，现场给你保留了，赶紧看看吧！”挂了电话一看短信，果然有告警过来了！还好服务没有重启，现场保留了，赶紧上到服务器上看看。看到是一个用户评分的服务，六台机器的其中一台CPU飙升，下面介绍一下问题排查的过程和解决方法。 一、查看导致CPU飙升的线程首先需要定位到是服务里的">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Java服务CPU飙到99%问题排查">
+<meta property="og:url" content="http://yoursite.com/Java服务CPU飙到99-问题排查.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一大早刚来到公司工位上，电话响起来了，一看是运维老湿打过来到，紧张的接起电话，小心脏扑通扑通跳。“小路啊，你有个服务CPU飙到99%，现场给你保留了，赶紧看看吧！”挂了电话一看短信，果然有告警过来了！还好服务没有重启，现场保留了，赶紧上到服务器上看看。看到是一个用户评分的服务，六台机器的其中一台CPU飙升，下面介绍一下问题排查的过程和解决方法。 一、查看导致CPU飙升的线程首先需要定位到是服务里的">
+<meta property="og:image" content="http://yoursite.com/img/jps.png">
+<meta property="og:image" content="http://yoursite.com/img/top.png">
+<meta property="og:image" content="http://yoursite.com/img/jstack.png">
+<meta property="og:updated_time" content="1979-11-29T16:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java服务CPU飙到99%问题排查">
+<meta name="twitter:description" content="一大早刚来到公司工位上，电话响起来了，一看是运维老湿打过来到，紧张的接起电话，小心脏扑通扑通跳。“小路啊，你有个服务CPU飙到99%，现场给你保留了，赶紧看看吧！”挂了电话一看短信，果然有告警过来了！还好服务没有重启，现场保留了，赶紧上到服务器上看看。看到是一个用户评分的服务，六台机器的其中一台CPU飙升，下面介绍一下问题排查的过程和解决方法。 一、查看导致CPU飙升的线程首先需要定位到是服务里的">
+<meta name="twitter:image" content="http://yoursite.com/img/jps.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="page-undefined" class="article article-type-page" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/Java服务CPU飙到99-问题排查.html" class="article-date">
+  <time datetime="2016-08-06T09:59:45.000Z" itemprop="datePublished">2016-08-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java服务CPU飙到99%问题排查
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一大早刚来到公司工位上，电话响起来了，一看是运维老湿打过来到，紧张的接起电话，小心脏扑通扑通跳。“小路啊，你有个服务CPU飙到99%，现场给你保留了，赶紧看看吧！”挂了电话一看短信，果然有告警过来了！还好服务没有重启，现场保留了，赶紧上到服务器上看看。看到是一个用户评分的服务，六台机器的其中一台CPU飙升，下面介绍一下问题排查的过程和解决方法。</p>
+<h1 id="一、查看导致CPU飙升的线程"><a href="#一、查看导致CPU飙升的线程" class="headerlink" title="一、查看导致CPU飙升的线程"></a>一、查看导致CPU飙升的线程</h1><p>首先需要定位到是服务里的那些线程导致CPU飙升的。具体查找方法：<br>1、在服务器上通过jps -1可以查到服务的进程号。<br><img src="/img/jps.png" alt="jps -l"><br>2、查到对应的进程号，通过top -H -p $pid，可以看到具体是哪个线程占用了CPU，记下该线程的id。<br><img src="/img/top.png" alt="top -H -p $pid"></p>
+<h1 id="二、查看对应线程的java堆栈信息。"><a href="#二、查看对应线程的java堆栈信息。" class="headerlink" title="二、查看对应线程的java堆栈信息。"></a>二、查看对应线程的java堆栈信息。</h1><p>根据找到的线程，可以去查看对应的java堆栈信息，来进一步定位是哪一段代码出现了问题。<br>通过jstack -l $pid可以查看java进程的堆栈信息，这里的pid是进程号。<br>在堆栈信息中nid指的就是线程id，但是这里的线程id是16进制，我们之前获取的线程id是10进制的，需要转换一下，比如我查到线程id是14533，转换后是38c5，所以在jstack -l结果中查看38c5这个线程。<br><img src="/img/jstack.png" alt="jstack -l $pid"><br>去代码里一看原因其实很简单，多线程环境下使用了非线程安全HashMap，导致了这个问题，但是使用HashMap怎么会跑满CPU呢？去查了一下才知道，HashMap在多线程环境下reHash时，可能会导致死循环，具体的分析这里就不再展开了，想了解的同学可以看下这个博客：<a href="http://github.thinkingbar.com/hashmap-infinite-loop/" target="_blank" rel="external">HashMap 死循环分析</a>。<br>解决的方法也很简单，将原来非线程安全的HashMap替换成线程安全的ConcurrentHashMap就行了。</p>
+<p>解决后发布，并将错误原因和修复结果反馈给运维老湿，老湿夸奖了我的响应迅速~</p>
+<p>这个错误告诉我，不要用主观的猜测去多线程环境下代码的工作方式，只要是多线程，一定要使用线程安全的类。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/Java服务CPU飙到99-问题排查.html" data-id="cj42mtuec0000tw3tp5kk3juz" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/18/My-New-Post/">My New Post</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/18/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2016/08/06/Java服务CPU飙到99-问题排查/">Java服务CPU飙到99%问题排查</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/24/java并发编程-Volatile变量/">Java并发编程——volatile变量</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

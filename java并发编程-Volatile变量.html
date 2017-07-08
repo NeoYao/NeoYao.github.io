@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java并发编程——volatile变量 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="内存可见性理解volatile变量首先要知道一个重要的概念:内存可见性。可见性是一种复杂的属性，因为它的行为总是跟我们的直觉相悖。我们知道在一个单线程的任务中，如果先向一个变量赋值，再读取这个变量，一定能获得这个变量赋值后的状态。但在读操作和写操作在不同线程的情况下，却不是这样，因为我们无法保证执行读操作的线程能适时的看到其他写操作线程写入的值。 下面这段代码，主线程作为写线程，启动一个读线程来修">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Java并发编程——volatile变量">
+<meta property="og:url" content="http://yoursite.com/java并发编程-Volatile变量.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="内存可见性理解volatile变量首先要知道一个重要的概念:内存可见性。可见性是一种复杂的属性，因为它的行为总是跟我们的直觉相悖。我们知道在一个单线程的任务中，如果先向一个变量赋值，再读取这个变量，一定能获得这个变量赋值后的状态。但在读操作和写操作在不同线程的情况下，却不是这样，因为我们无法保证执行读操作的线程能适时的看到其他写操作线程写入的值。 下面这段代码，主线程作为写线程，启动一个读线程来修">
+<meta property="og:updated_time" content="1979-11-29T16:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java并发编程——volatile变量">
+<meta name="twitter:description" content="内存可见性理解volatile变量首先要知道一个重要的概念:内存可见性。可见性是一种复杂的属性，因为它的行为总是跟我们的直觉相悖。我们知道在一个单线程的任务中，如果先向一个变量赋值，再读取这个变量，一定能获得这个变量赋值后的状态。但在读操作和写操作在不同线程的情况下，却不是这样，因为我们无法保证执行读操作的线程能适时的看到其他写操作线程写入的值。 下面这段代码，主线程作为写线程，启动一个读线程来修">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="page-undefined" class="article article-type-page" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/java并发编程-Volatile变量.html" class="article-date">
+  <time datetime="2016-07-24T01:34:15.000Z" itemprop="datePublished">2016-07-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java并发编程——volatile变量
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="内存可见性"><a href="#内存可见性" class="headerlink" title="内存可见性"></a>内存可见性</h2><p>理解volatile变量首先要知道一个重要的概念:<code>内存可见性</code>。可见性是一种复杂的属性，因为它的行为总是跟我们的直觉相悖。我们知道在一个单线程的任务中，如果先向一个变量赋值，再读取这个变量，一定能获得这个变量赋值后的状态。但在读操作和写操作在不同线程的情况下，却不是这样，因为我们无法保证执行读操作的线程能适时的看到其他写操作线程写入的值。</p>
+<p>下面这段代码，主线程作为写线程，启动一个读线程来修改ready和number的值，读线程判断ready的值为true就输出number。看起来会输出42，但也有可能输出0，或者无法终止，因为代码中没有足够的同步机制来保证主线程写入ready和number时对读线程是可见的。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NoVisibility</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> ready;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> number;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ReaderThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">while</span> (!ready) &#123;</div><div class="line">                Thread.yield();</div><div class="line">            &#125;</div><div class="line">            System.out.println(number);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        <span class="keyword">new</span> ReaderThread().start();</div><div class="line">        number = <span class="number">42</span>;</div><div class="line">        ready = <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>输出0是因为读线程看到了ready修改后的值，却没有看到number修改后的值，这种现场被称为<code>重排序</code>,在没有同步的情况下，编译器、处理器以及运行时等都有可能对操作的执行顺序进行一些意想不到的调整，其他线程无法获得当前线程的重排序情况，所以对其他线程来说不能保证当前现场按照代码顺序执行。这看起来有些复杂的问题，其实有一个非常简单的解决办法，就是只要数据在多个线程间共享，就使用正确的同步方式对他们进行同步。</p>
+<h2 id="volatile变量"><a href="#volatile变量" class="headerlink" title="volatile变量"></a>volatile变量</h2><p>volatile变量就是Java提供的一种稍弱的同步方式，用来确保变量的更新操作通知到其他线程。当把变量声明为Volatile类型后，编译器与运行时都会注意到这个变量是共享的，因此不会将该变量上的操作与其他内存操作一起重排序。volatile变量不会被缓存在寄存器或者其他对处理器不可见的地方，因此在读取volatile类型的变量时总会返回最新的写入值。<br>volatile变量通常用做某个操作完成、发生中断或者状态的标志。下面给出了一种volatile的常见用法：检查某个状态标记来判断是否退出循环：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">volatile</span> <span class="keyword">boolean</span> asleep</div><div class="line">···</div><div class="line"><span class="keyword">while</span>(!asleep)&#123;</div><div class="line">    countSomeSheep();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>通过这种方式，当asleep被另一个线程修改时，执行判断的线程可以发现asleep的变化。</p>
+<p>但是，volatile不能代替加锁机制，因为<code>volatile只能保证原子性而不能保证可见性</code>。列如，volatile的语义不能确保递增操作，如count++，的原子性，如果有多个线程执行count++操作，volatile无法保证正常的执行结果。而原子变量（如AtomicInteger、AtomicReference）提供了原子性和可见性，它们也经常被当做一种更好的volatile变量。</p>
+<p>因为有上述的限制，只有满足下列条件时，才能使用volatile变量：</p>
+<blockquote>
+<ul>
+<li>对变量的写入操作不依赖变量的当前值，或者只有单个线程对变量进行写入操作。</li>
+<li>该变量不会与其他状态变量一起纳入不变型条件。</li>
+<li>在访问变量时不需要加锁。</li>
+</ul>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/java并发编程-Volatile变量.html" data-id="cj42mtued0001tw3t88mlr26c" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/18/My-New-Post/">My New Post</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/18/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2016/08/06/Java服务CPU飙到99-问题排查/">Java服务CPU飙到99%问题排查</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/24/java并发编程-Volatile变量/">Java并发编程——volatile变量</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
