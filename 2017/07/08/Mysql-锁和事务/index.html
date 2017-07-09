@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/07/08/Mysql-锁和事务/index.html">
 <meta property="og:site_name" content="Neo的博客">
 <meta property="og:description" content="事务事务就是一组原子性的SQL操作，或者一个独立的工作单元。如果数据库引擎能够成功的执行一个事务中的全部SQL语句，那么它就会执行这组操作。如果其中有任何一个执行失败，那么所有的语句都不会执行。所以同一个事务中的操作要不全部执行成功，要不全部执行失败。每种存储引擎的事务实现不尽相同，下面主要介绍的都是最常用的MySQL的InnoDB存储引擎。 ACIDACID是数据库的一组设计原则，强调事务的可靠">
-<meta property="og:updated_time" content="2017-07-09T08:53:46.000Z">
+<meta property="og:updated_time" content="2017-07-09T08:56:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL 锁和事务">
 <meta name="twitter:description" content="事务事务就是一组原子性的SQL操作，或者一个独立的工作单元。如果数据库引擎能够成功的执行一个事务中的全部SQL语句，那么它就会执行这组操作。如果其中有任何一个执行失败，那么所有的语句都不会执行。所以同一个事务中的操作要不全部执行成功，要不全部执行失败。每种存储引擎的事务实现不尽相同，下面主要介绍的都是最常用的MySQL的InnoDB存储引擎。 ACIDACID是数据库的一组设计原则，强调事务的可靠">
@@ -359,7 +359,7 @@
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">shell&gt; mysql test</div><div class="line"></div><div class="line">mysql&gt; CREATE TABLE customer (a INT, b CHAR (20), INDEX (a));</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line">mysql&gt; INSERT INTO customer VALUES (10, 'Heikki');</div><div class="line">Query OK, 1 row affected (0.00 sec)</div><div class="line">mysql&gt; select * from customer;</div><div class="line">+------+--------+</div><div class="line">| a    | b      |</div><div class="line">+------+--------+</div><div class="line">|   10 | Heikki |</div><div class="line">+------+--------+</div><div class="line">1 row in set (0.01 sec)</div><div class="line">mysql&gt; -- Do transaction with autocommit turned off.</div><div class="line">mysql&gt; SET autocommit=0;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line">mysql&gt; INSERT INTO customer VALUES (15, 'John');</div><div class="line">Query OK, 1 row affected (0.00 sec)</div><div class="line">mysql&gt; INSERT INTO customer VALUES (20, 'Paul');</div><div class="line">Query OK, 1 row affected (0.00 sec)</div><div class="line">mysql&gt; DELETE FROM customer WHERE b = 'Heikki';</div><div class="line">Query OK, 1 row affected (0.00 sec)</div><div class="line">mysql&gt; -- Now we undo those last 2 inserts and the delete.</div><div class="line">mysql&gt; select * from customer;</div><div class="line">+------+------+</div><div class="line">| a    | b    |</div><div class="line">+------+------+</div><div class="line">|   15 | John |</div><div class="line">|   20 | Paul |</div><div class="line">+------+------+</div><div class="line">2 rows in set (0.00 sec)</div><div class="line">mysql&gt; ROLLBACK;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line">mysql&gt; select * from customer;</div><div class="line">+------+--------+</div><div class="line">| a    | b      |</div><div class="line">+------+--------+</div><div class="line">|   10 | Heikki |</div><div class="line">+------+--------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">mysql&gt;</div></pre></td></tr></table></figure>
 <p>可以看到设置autocommit=0后，执行ROLLBACK回滚，中间执行的操作都没有生效。</p>
 <h3 id="显式提交"><a href="#显式提交" class="headerlink" title="显式提交"></a>显式提交</h3><p>使用过的事务的同学应该都了解，如何显示的提交事务。这里不过多说明。<br>常用语法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">START TRANSACTION 或 BEGIN 开始一个事务。</div><div class="line">COMMIT 提交当前事务， 让事务中的操作生效。</div><div class="line">ROLLBACK 回滚当前事务，取消事务中的操作。</div></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span> 或 <span class="keyword">BEGIN</span> 开始一个事务。</div><div class="line"><span class="keyword">COMMIT</span> 提交当前事务， 让事务中的操作生效。</div><div class="line"><span class="keyword">ROLLBACK</span> 回滚当前事务，取消事务中的操作。</div></pre></td></tr></table></figure>
 <h3 id="显式和隐式的锁定"><a href="#显式和隐式的锁定" class="headerlink" title="显式和隐式的锁定"></a>显式和隐式的锁定</h3><p>InnoDB采用的是两阶段锁定协议（two-phase locking protocol）。在事务执行过程中，随时都可以执行锁定，锁只有在执行COMMIT或者ROLLBACK的时候才会释放。并且所有的锁是在同一时刻被释放。前面描述的锁定都是隐式锁定，InnoDB会根据隔离几倍在需要的时候自动加锁。<br>如果你需要在一个事务中查询数据后马上插入或者更新相关的数据，常规的select语句是无法满足要求的，因为在查询结束后，其他事务可能更新或删除相同行数据，导致更新后数据的不一致性。InnoDB提供两种额外的读锁，来保证这种场景的数据可靠性。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> ... <span class="keyword">LOCK</span> <span class="keyword">IN</span> <span class="keyword">SHARE</span> <span class="keyword">MODE</span></div></pre></td></tr></table></figure>
 <p>会使用共享模式的锁将相关数据行锁定，其他事务可以读取这些行，但是如果要修改它们的时候，必须等获得锁的事务提交commit。如果在查询的时候，其中某些行被其他事务修改但还没有提交，当前事务的查询会等待直到其他事务结束，然后读取最新的数据。</p>
@@ -376,9 +376,10 @@
 <p>以MySQL的InnoDB存储引擎为例，InnoDB在每行的记录后保存两个隐藏的列，一列存储行的修改时间，另一个列存储行的过期时间（或删除时间）。注意，InnoDB存储的不是绝对时间，而是在事务创建的时候分配给事务的系统版本号，这个版本号会随着事务创建递增。每执行一条查询语句，InnoDB都会把这个查询语句的版本号同遇到的行版本号进行对比，然后结合不同的事务隔离级别，来决定是否返回该行数据。下面看一下在REPESTABLE READ隔离级别下，MVCC具体如何操作的。</p>
 <p><strong>SELECT</strong></p>
 <p>对于SELECT语句，只有满足下面两个条件的行，才会被返回：</p>
-<pre><code>a. 行的修改版本号小于等于该事务版本号。
-b. 行的删除版本号要不没有被定义，要不大于事务的版本号。
-</code></pre><p>如果行的修改或者删除版本大于事务号，说明行是被该事务后面启动的事务修改或删除的。在可重复读隔离级别下，后开始的事务对数据的影响不应该被先开始的事务看见，所以应该忽略后开始的事务更新或者删除操作 </p>
+<blockquote>
+<p>a. 行的修改版本号小于等于该事务版本号。<br>b. 行的删除版本号要不没有被定义，要不大于事务的版本号。</p>
+</blockquote>
+<p>如果行的修改或者删除版本大于事务号，说明行是被该事务后面启动的事务修改或删除的。在可重复读隔离级别下，后开始的事务对数据的影响不应该被先开始的事务看见，所以应该忽略后开始的事务更新或者删除操作 </p>
 <p><strong>INSERT</strong></p>
 <p>对于新插入的行，保存当前系统版本号为修改版本号。</p>
 <p><strong>DELETE</strong></p>
@@ -478,15 +479,6 @@ b. 行的删除版本号要不没有被定义，要不大于事务的版本号�
 
   
 <nav id="article-nav">
-  
-    <a href="/2017/07/09/2017-07-09/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          (no title)
-        
-      </div>
-    </a>
   
   
     <a href="/2016/08/06/Java服务CPU飙到99-问题排查/" id="article-nav-older" class="article-nav-link-wrap">
