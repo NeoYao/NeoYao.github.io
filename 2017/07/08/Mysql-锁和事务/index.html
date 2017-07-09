@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/07/08/Mysql-锁和事务/index.html">
 <meta property="og:site_name" content="Neo的博客">
 <meta property="og:description" content="事务事务就是一组原子性的SQL操作，或者一个独立的工作单元。如果数据库引擎能够成功的执行一个事务中的全部SQL语句，那么它就会执行这组操作。如果其中有任何一个执行失败，那么所有的语句都不会执行。所以同一个事务中的操作要不全部执行成功，要不全部执行失败。每种存储引擎的事务实现不尽相同，下面主要介绍的都是最常用的MySQL的InnoDB存储引擎。 ACIDACID是数据库的一组设计原则，强调事务的可靠">
-<meta property="og:updated_time" content="2017-07-09T08:57:32.000Z">
+<meta property="og:updated_time" content="2017-07-09T09:08:56.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL 锁和事务">
 <meta name="twitter:description" content="事务事务就是一组原子性的SQL操作，或者一个独立的工作单元。如果数据库引擎能够成功的执行一个事务中的全部SQL语句，那么它就会执行这组操作。如果其中有任何一个执行失败，那么所有的语句都不会执行。所以同一个事务中的操作要不全部执行成功，要不全部执行失败。每种存储引擎的事务实现不尽相同，下面主要介绍的都是最常用的MySQL的InnoDB存储引擎。 ACIDACID是数据库的一组设计原则，强调事务的可靠">
@@ -153,6 +153,7 @@
       
         <h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><p>事务就是一组原子性的SQL操作，或者一个独立的工作单元。如果数据库引擎能够成功的执行一个事务中的全部SQL语句，那么它就会执行这组操作。如果其中有任何一个执行失败，那么所有的语句都不会执行。所以同一个事务中的操作要不全部执行成功，要不全部执行失败。每种存储引擎的事务实现不尽相同，下面主要介绍的都是最常用的MySQL的InnoDB存储引擎。</p>
 <h2 id="ACID"><a href="#ACID" class="headerlink" title="ACID"></a>ACID</h2><p>ACID是数据库的一组设计原则，强调事务的可靠性设计。ACID对关键的核心业务及数据非常重要，它可以保证在执行失败或机器损坏等条件下，数据不会损坏。除非通过严格的ACID测试，否则空谈事务的概念是不够的。ACID表示原子性（atomicity）、一致性（consistency）、隔离性（isolation）、持久性（durability）。一个良好运行的事务处理系统，必须具备这些标准。</p>
+<a id="more"></a>
 <p><strong>原子性（atomicity）</strong></p>
 <blockquote>
 <p>一个事务必须被视为一个不可分割的最小工作单元，整个事务中的所有操作要么全部提交成功，要么全部失败回滚，对于一个事务来说，不可能只执行其中的一部分操作，这就是事务的原子性</p>
