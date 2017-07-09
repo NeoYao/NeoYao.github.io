@@ -129,6 +129,39 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-2017-07-09" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p># </p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/09/2017-07-09/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-Mysql-锁和事务" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -136,7 +169,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/08/Mysql-锁和事务/">Mysql 锁和事务</a>
+      <a class="article-title" href="/2017/07/08/Mysql-锁和事务/">MySQL 锁和事务</a>
     </h1>
   
 
@@ -149,7 +182,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><p>事务就是一组原子性的SQL操作，或者一个独立的工作单元。如果数据库引擎能够成功的执行一个事务中的全部SQL语句，那么它就会执行这组操作。如果其中有任何一个执行失败，那么所有的语句都不会执行。所以同一个事务中的操作要不全部执行成功，要不全部执行失败。每种存储引擎的事务实现不尽相同，下面主要介绍的都是最常用的MYSQL的InnerDB存储引擎。</p>
+        <h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><p>事务就是一组原子性的SQL操作，或者一个独立的工作单元。如果数据库引擎能够成功的执行一个事务中的全部SQL语句，那么它就会执行这组操作。如果其中有任何一个执行失败，那么所有的语句都不会执行。所以同一个事务中的操作要不全部执行成功，要不全部执行失败。每种存储引擎的事务实现不尽相同，下面主要介绍的都是最常用的MySQL的InnoDB存储引擎。</p>
 <h2 id="ACID"><a href="#ACID" class="headerlink" title="ACID"></a>ACID</h2><p>ACID是数据库的一组设计原则，强调事务的可靠性设计。ACID对关键的核心业务及数据非常重要，它可以保证在执行失败或机器损坏等条件下，数据不会损坏。除非通过严格的ACID测试，否则空谈事务的概念是不够的。ACID表示原子性（atomicity）、一致性（consistency）、隔离性（isolation）、持久性（durability）。一个良好运行的事务处理系统，必须具备这些标准。</p>
 <p><strong>原子性（atomicity）</strong></p>
 <blockquote>
@@ -171,16 +204,140 @@
 <blockquote>
 <p>在READ UNCOMMITTED级别，事务中的修改，即使没有提交，对其他事务也都是可见的。事务可以读取未提交的数据，这也被称为脏读（Dirty Read）。这个级别会导致很多问题，从性能上来说，READ UNCOMMITTED不会比其他的级别好太多，但却缺乏其他级别的很多好处，除非真的有非常必要的理由，在实际应用中一般很少使用。</p>
 </blockquote>
-<p>例子：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> * <span class="keyword">form</span> t1 <span class="keyword">where</span> bid = <span class="number">1</span>;</div></pre></td></tr></table></figure>
+<p>脏读例子：<br>比如小明的银行账户当前余额为0，他要同时存入100元，再转100元到小红的账户。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">事务A</th>
+<th style="text-align:center">事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">事务A开始</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">事务B开始</td>
+</tr>
+<tr>
+<td style="text-align:center">小明存入100元</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">查询小明账户发现有100元</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">转帐到小红账户100元</td>
+</tr>
+<tr>
+<td style="text-align:center">事务处理发生异常</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">提交成功</td>
+</tr>
+<tr>
+<td style="text-align:center">回滚</td>
+</tr>
+</tbody>
+</table>
+<p>可以发现，小明存入的100元由于回滚操作，又退回到了小明手中，但是因为转帐时可以读到事务A已经更新的100元，转帐操作成功，小红账户上无缘无故多出了100元。</p>
 <p><strong>READ COMMITTED（提交读）</strong></p>
 <blockquote>
-<p>大多数数据库系统的默认隔离级别都是READ COMMTTED（但MySQL不是）。READ COMMITTED满足前面提到的隔离性的简单定义：一个事务开始时，只能”看见”已经提交的事务所做的修改。换句话说，一个事务从开始直到提交之前，所做的任何修改对其他事务都是不可见的。这个级别有时候叫做不可重复读（nonrepeatble read），因为两次执行同样的查询，可能会得到不一样的结果</p>
+<p>大多数数据库系统的默认隔离级别都是READ COMMTTED（但MySQL不是）。READ COMMITTED满足前面提到的隔离性的简单定义：一个事务开始时，只能”看见”已经提交的事务所做的修改。换句话说，一个事务从开始直到提交之前，所做的任何修改对其他事务都是不可见的。这个级别有时候叫做不可重复读（nonrepeatble read），因为两次执行同样的查询，可能会得到不一样的结果。</p>
 </blockquote>
+<p>重复读例子：<br>还是已小明转帐为例，这次小明银行账户里已经有100元，他要转给小红100，同时小明妈妈要从小明账户里转走100。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">事务A</th>
+<th style="text-align:center">事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">事务A开始</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">事务B开始</td>
+</tr>
+<tr>
+<td style="text-align:center">查询账户有100元</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">转账预处理</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">小明妈妈转走100元</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">提交</td>
+</tr>
+<tr>
+<td style="text-align:center">转账前再次查询账户余额，余额不足</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">回滚</td>
+</tr>
+</tbody>
+</table>
+<p>可以看到事务A在开始时查询账号余额是充足的，但在实际操作时转账没有成功，因为余额不足事务A回滚了。</p>
 <p><strong>REPEATABLE READ(可重复读)</strong></p>
 <blockquote>
 <p>REPEATABLE READ解决了脏读的问题。该隔离级别保证了在同一个事务中多次读取同样记录结果是一致的。但是理论上，可重复读隔离级别还是无法解决另外一个幻读（Phantom Read）的问题。所谓幻读，指的是当某个事务在读取某个范围内的记录时，另一个事务又在该范围内插入了新的记录，当之前的事务再次读取该范围的记录时，会产生幻行（Phantom Row）。InnoDB和XtraDB存储引擎通过多版本并发控制（MVCC，Multiversion Concurrency Control）解决了幻读的问题。</p>
 </blockquote>
+<p>幻读例子：<br>小明打印银行账单，账单上只有一笔100元的消费，此时小明的女朋友又用小明的银行卡买了一个1万元的包。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">事务A</th>
+<th style="text-align:center">事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">事务A开始</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">事务B开始</td>
+</tr>
+<tr>
+<td style="text-align:center">拉取账单明细列表，只有一笔100元的交易记录</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">小明女朋友消费1万元，插入交易记录</td>
+</tr>
+<tr>
+<td style="text-align:center">计算账单总金额，10100元</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">提交</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">提交</td>
+</tr>
+</tbody>
+</table>
+<p>小明发现账单上只有一笔100元的交易记录，可是账单总额却变成了10100元。</p>
 <p><strong>SERIALIZABLE（可串行化）</strong></p>
 <blockquote>
 <p>SERIALIZABLE是最高的隔离级别。它通过强制事务串行执行，避免了前面说的幻读的问题。简单来说，SERIALIZABLE会在读取每一行数据都加锁，所以可能导致大量的超时和锁争用问题。实际应用中也很少用到这个隔离级别，只有在非常需要确保数据的一致性而且可以接受没有并发的情况下，才考虑采用该级别。</p>
@@ -226,6 +383,40 @@
 </tr>
 </tbody>
 </table>
+<h2 id="MySQL中的事务"><a href="#MySQL中的事务" class="headerlink" title="MySQL中的事务"></a>MySQL中的事务</h2><p>MySQL提供了两种事务型的存储引擎：InnoDB和NDB Cluster。另外还有一些第三方存储引擎也支持事务，比较知名的包括XtraDB和PBXT。后面主要介绍InnoDB。</p>
+<h3 id="自动提交（autocommit）"><a href="#自动提交（autocommit）" class="headerlink" title="自动提交（autocommit）"></a>自动提交（autocommit）</h3><p>这里需要了解一个概念，并不是只有显式提交的事务SQL是事务，其实每条SQL执行语句都是一个事务。MySQL默认采用自动提交模式，也就是说，如果不显示的提交一个事务，每个SQL操作都被当做一个事务提交。可以通过设置autocommit变量来启动或者禁止自动提交模式。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mysql&gt; show variables like 'autocommit';</div><div class="line">+---------------+-------+</div><div class="line">| Variable_name | Value |</div><div class="line">+---------------+-------+</div><div class="line">| autocommit    | ON    |</div><div class="line">+---------------+-------+</div><div class="line">1 row in set (0.01 sec)</div></pre></td></tr></table></figure>
+<p>ON或1表示启用，0或OFF表示禁用。当设置autocommit=0时，所有操作都在一个事务中，必须显示的执行commit提交或者rollback回滚，该事务结束，同时又开启了一个新的事务。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">shell&gt; mysql test</div><div class="line"></div><div class="line">mysql&gt; CREATE TABLE customer (a INT, b CHAR (20), INDEX (a));</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line">mysql&gt; INSERT INTO customer VALUES (10, 'Heikki');</div><div class="line">Query OK, 1 row affected (0.00 sec)</div><div class="line">mysql&gt; select * from customer;</div><div class="line">+------+--------+</div><div class="line">| a    | b      |</div><div class="line">+------+--------+</div><div class="line">|   10 | Heikki |</div><div class="line">+------+--------+</div><div class="line">1 row in set (0.01 sec)</div><div class="line">mysql&gt; -- Do transaction with autocommit turned off.</div><div class="line">mysql&gt; SET autocommit=0;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line">mysql&gt; INSERT INTO customer VALUES (15, 'John');</div><div class="line">Query OK, 1 row affected (0.00 sec)</div><div class="line">mysql&gt; INSERT INTO customer VALUES (20, 'Paul');</div><div class="line">Query OK, 1 row affected (0.00 sec)</div><div class="line">mysql&gt; DELETE FROM customer WHERE b = 'Heikki';</div><div class="line">Query OK, 1 row affected (0.00 sec)</div><div class="line">mysql&gt; -- Now we undo those last 2 inserts and the delete.</div><div class="line">mysql&gt; select * from customer;</div><div class="line">+------+------+</div><div class="line">| a    | b    |</div><div class="line">+------+------+</div><div class="line">|   15 | John |</div><div class="line">|   20 | Paul |</div><div class="line">+------+------+</div><div class="line">2 rows in set (0.00 sec)</div><div class="line">mysql&gt; ROLLBACK;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line">mysql&gt; select * from customer;</div><div class="line">+------+--------+</div><div class="line">| a    | b      |</div><div class="line">+------+--------+</div><div class="line">|   10 | Heikki |</div><div class="line">+------+--------+</div><div class="line">1 row in set (0.00 sec)</div><div class="line">mysql&gt;</div></pre></td></tr></table></figure>
+<p>可以看到设置autocommit=0后，执行ROLLBACK回滚，中间执行的操作都没有生效。</p>
+<h3 id="显式提交"><a href="#显式提交" class="headerlink" title="显式提交"></a>显式提交</h3><p>使用过的事务的同学应该都了解，如何显示的提交事务。这里不过多说明。<br>常用语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">START TRANSACTION 或 BEGIN 开始一个事务。</div><div class="line">COMMIT 提交当前事务， 让事务中的操作生效。</div><div class="line">ROLLBACK 回滚当前事务，取消事务中的操作。</div></pre></td></tr></table></figure>
+<h3 id="显式和隐式的锁定"><a href="#显式和隐式的锁定" class="headerlink" title="显式和隐式的锁定"></a>显式和隐式的锁定</h3><p>InnoDB采用的是两阶段锁定协议（two-phase locking protocol）。在事务执行过程中，随时都可以执行锁定，锁只有在执行COMMIT或者ROLLBACK的时候才会释放。并且所有的锁是在同一时刻被释放。前面描述的锁定都是隐式锁定，InnoDB会根据隔离几倍在需要的时候自动加锁。<br>如果你需要在一个事务中查询数据后马上插入或者更新相关的数据，常规的select语句是无法满足要求的，因为在查询结束后，其他事务可能更新或删除相同行数据，导致更新后数据的不一致性。InnoDB提供两种额外的读锁，来保证这种场景的数据可靠性。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> ... <span class="keyword">LOCK</span> <span class="keyword">IN</span> <span class="keyword">SHARE</span> <span class="keyword">MODE</span></div></pre></td></tr></table></figure>
+<p>会使用共享模式的锁将相关数据行锁定，其他事务可以读取这些行，但是如果要修改它们的时候，必须等获得锁的事务提交commit。如果在查询的时候，其中某些行被其他事务修改但还没有提交，当前事务的查询会等待直到其他事务结束，然后读取最新的数据。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> ... <span class="keyword">FOR</span> <span class="keyword">UPDATE</span></div></pre></td></tr></table></figure>
+<p>查询涉及的相关行会被锁定，其他事务FOR UPDATE的查询语句会被阻塞，等待锁被释放后才能返回查询结果。</p>
+<p>LOCK IN SHARE MODE 和 FOR UPDATE都会在事务提交或回滚后释放。<br>读锁的例子：<br>比如你要向子表里插入一条记录，需要确保在父表里有这条子记录的父纪录。你的应用程序需要在整个操作序列中保证操作的完整性。<br>首先，通过查询语句确保父表中的父记录存在，这时能够安全的插入子记录吗？不能，因为其他事务可能会在你查询和插入子记录的操作中间，删除掉这条父记录，而你无法发现它。<br>为了解决这个问题，最好的方式是使用<code>SELECT ... LOCK IN SHARE MODE</code>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">parent</span> <span class="keyword">WHERE</span> <span class="keyword">NAME</span> = <span class="string">'Jones'</span> <span class="keyword">LOCK</span> <span class="keyword">IN</span> <span class="keyword">SHARE</span> <span class="keyword">MODE</span>;</div></pre></td></tr></table></figure>
+<p>在锁定了父表中的记录后，你可以安全的插入子记录，然后提交事务。其他事务讲等待锁释放后才能修改这条记录。<br>另一个例子，需要使用数据库表做一个计数器，每次操作就给记录上的count加1。需要保证查询的一致性，这是看到使用<code>LOCK IN SHARE MODE</code>不能解决这个问题，因为如果两个事务在同时读取count的时候，它们俩先后更新结果是一样的，count只会加1。<br>为了解决自增count的问题，最好使用<code>FOR UPDATE</code>查询自增的记录，然后执行更新。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> counter_field <span class="keyword">FROM</span> child_codes <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</div><div class="line"><span class="keyword">UPDATE</span> child_codes <span class="keyword">SET</span> counter_field = counter_field + <span class="number">1</span>;</div></pre></td></tr></table></figure>
+<p><code>FOR UPDATE</code>会读取最新的数据，并获取排它锁阻塞其他事务读取相关记录，这同在<code>UPDATE</code>数据时设置的锁相同。</p>
+<h2 id="多版本并发控制"><a href="#多版本并发控制" class="headerlink" title="多版本并发控制"></a>多版本并发控制</h2><p>互联网业务中，读操作所占的比例往往远远超过写事务，进过分析有很多读操作都是不用加锁的，可以大大提交数据库的性能。MySQL的大多数事务性存储引擎实现的都不是简单的行级锁。基于提升并发性能的考虑，它们一般都同时实现了多版本并发控制（MVCC）。不仅是MySQL，包括Oracle、PoastgreSQL等其他数据库系统也都实现了MVCC，但各自的实现机制不同，因为MVCC没有一个统一的标准。</p>
+<p>可以认为MVCC是行级锁的一种变种，但是它在很多情况下避免了加锁操作，因此开销更低。虽然实现机制有所不同，但大多数都实现了非阻塞的读操作，写操作也只锁定必要的行。</p>
+<p>MVCC的实现，是通过保持数据在某个时间点的快照来实现的。MVCC对每行数据维护多个版本，无论事务执行的时间多长，MVCC总是能够提供与事务开始时刻相一致的数据。</p>
+<p>以MySQL的InnoDB存储引擎为例，InnoDB在每行的记录后保存两个隐藏的列，一列存储行的修改时间，另一个列存储行的过期时间（或删除时间）。注意，InnoDB存储的不是绝对时间，而是在事务创建的时候分配给事务的系统版本号，这个版本号会随着事务创建递增。每执行一条查询语句，InnoDB都会把这个查询语句的版本号同遇到的行版本号进行对比，然后结合不同的事务隔离级别，来决定是否返回该行数据。下面看一下在REPESTABLE READ隔离级别下，MVCC具体如何操作的。</p>
+<p><strong>SELECT</strong></p>
+<p>对于SELECT语句，只有满足下面两个条件的行，才会被返回：</p>
+<pre><code>a. 行的修改版本号小于等于该事务版本号。
+b. 行的删除版本号要不没有被定义，要不大于事务的版本号。
+</code></pre><p>如果行的修改或者删除版本大于事务号，说明行是被该事务后面启动的事务修改或删除的。在可重复读隔离级别下，后开始的事务对数据的影响不应该被先开始的事务看见，所以应该忽略后开始的事务更新或者删除操作 </p>
+<p><strong>INSERT</strong></p>
+<p>对于新插入的行，保存当前系统版本号为修改版本号。</p>
+<p><strong>DELETE</strong></p>
+<p>对于删除的行，直接把改行的删除版本号设置为当前事物号，相当于标记为删除，而不是逻辑删除。</p>
+<p><strong>UPDATE</strong></p>
+<p>在更新行的时候，InnoDB会把原来的行复制一份，并把当前的事务号作为改行的修改版本号，同时保存当前事务号到原来的行做为删除标识。</p>
+<p>保存这两个额外的系统版本号，使大多数操作都可以不用加锁。这样设计使得读数据操作很简单，性能很好，并且也能保证只会读取到符合标准的行，大大提高了系统的并发度。不足之处是每行记录都要额外的存储空间，需要做更多行的检查工作，以及一些额外的维护工作，比如存储引擎需要定期删除不再需要的版本，及时回收空间。</p>
 
       
 

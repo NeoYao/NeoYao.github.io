@@ -6,22 +6,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Java服务CPU飙到99%问题排查 | Neo的博客</title>
+  <title>Neo的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一大早刚来到公司工位上，电话响起来了，一看是运维老湿打过来到，紧张的接起电话，小心脏扑通扑通跳。“小路啊，你有个服务CPU飙到99%，现场给你保留了，赶紧看看吧！”挂了电话一看短信，果然有告警过来了！还好服务没有重启，现场保留了，赶紧上到服务器上看看。看到是一个用户评分的服务，六台机器的其中一台CPU飙升，下面介绍一下问题排查的过程和解决方法。 一、查看导致CPU飙升的线程首先需要定位到是服务里的">
+  <meta name="description" content="#">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java服务CPU飙到99%问题排查">
-<meta property="og:url" content="http://yoursite.com/2016/08/06/Java服务CPU飙到99-问题排查/index.html">
+<meta property="og:title" content="Neo的博客">
+<meta property="og:url" content="http://yoursite.com/2017/07/09/2017-07-09/index.html">
 <meta property="og:site_name" content="Neo的博客">
-<meta property="og:description" content="一大早刚来到公司工位上，电话响起来了，一看是运维老湿打过来到，紧张的接起电话，小心脏扑通扑通跳。“小路啊，你有个服务CPU飙到99%，现场给你保留了，赶紧看看吧！”挂了电话一看短信，果然有告警过来了！还好服务没有重启，现场保留了，赶紧上到服务器上看看。看到是一个用户评分的服务，六台机器的其中一台CPU飙升，下面介绍一下问题排查的过程和解决方法。 一、查看导致CPU飙升的线程首先需要定位到是服务里的">
-<meta property="og:image" content="http://yoursite.com/images/jps.png">
-<meta property="og:image" content="http://yoursite.com/images/top.png">
-<meta property="og:image" content="http://yoursite.com/images/jstack.png">
-<meta property="og:updated_time" content="2017-06-22T01:11:57.000Z">
+<meta property="og:description" content="#">
+<meta property="og:updated_time" content="2017-07-09T08:41:36.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java服务CPU飙到99%问题排查">
-<meta name="twitter:description" content="一大早刚来到公司工位上，电话响起来了，一看是运维老湿打过来到，紧张的接起电话，小心脏扑通扑通跳。“小路啊，你有个服务CPU飙到99%，现场给你保留了，赶紧看看吧！”挂了电话一看短信，果然有告警过来了！还好服务没有重启，现场保留了，赶紧上到服务器上看看。看到是一个用户评分的服务，六台机器的其中一台CPU飙升，下面介绍一下问题排查的过程和解决方法。 一、查看导致CPU飙升的线程首先需要定位到是服务里的">
-<meta name="twitter:image" content="http://yoursite.com/images/jps.png">
+<meta name="twitter:title" content="Neo的博客">
+<meta name="twitter:description" content="#">
   
     <link rel="alternative" href="/atom.xml" title="Neo的博客" type="application/atom+xml">
   
@@ -135,31 +131,12 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Java服务CPU飙到99-问题排查" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-2017-07-09" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      Java服务CPU飙到99%问题排查
-    </h1>
-  
-
-        
-        <a href="/2016/08/06/Java服务CPU飙到99-问题排查/" class="archive-article-date">
-  	<time datetime="2016-08-06T09:59:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2016-08-06</time>
-</a>
-        
-      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>一大早刚来到公司工位上，电话响起来了，一看是运维老湿打过来到，紧张的接起电话，小心脏扑通扑通跳。“小路啊，你有个服务CPU飙到99%，现场给你保留了，赶紧看看吧！”挂了电话一看短信，果然有告警过来了！还好服务没有重启，现场保留了，赶紧上到服务器上看看。看到是一个用户评分的服务，六台机器的其中一台CPU飙升，下面介绍一下问题排查的过程和解决方法。</p>
-<h1 id="一、查看导致CPU飙升的线程"><a href="#一、查看导致CPU飙升的线程" class="headerlink" title="一、查看导致CPU飙升的线程"></a>一、查看导致CPU飙升的线程</h1><p>首先需要定位到是服务里的那些线程导致CPU飙升的。具体查找方法：<br>1、在服务器上通过jps -1可以查到服务的进程号。<br><img src="/images/jps.png" alt="jps -l"><br>2、查到对应的进程号，通过top -H -p $pid，可以看到具体是哪个线程占用了CPU，记下该线程的id。<br><img src="/images/top.png" alt="top -H -p $pid"></p>
-<h1 id="二、查看对应线程的java堆栈信息。"><a href="#二、查看对应线程的java堆栈信息。" class="headerlink" title="二、查看对应线程的java堆栈信息。"></a>二、查看对应线程的java堆栈信息。</h1><p>根据找到的线程，可以去查看对应的java堆栈信息，来进一步定位是哪一段代码出现了问题。<br>通过jstack -l $pid可以查看java进程的堆栈信息，这里的pid是进程号。<br>在堆栈信息中nid指的就是线程id，但是这里的线程id是16进制，我们之前获取的线程id是10进制的，需要转换一下，比如我查到线程id是14533，转换后是38c5，所以在jstack -l结果中查看38c5这个线程。<br><img src="/images/jstack.png" alt="jstack -l $pid"><br>去代码里一看原因其实很简单，多线程环境下使用了非线程安全HashMap，导致了这个问题，但是使用HashMap怎么会跑满CPU呢？去查了一下才知道，HashMap在多线程环境下reHash时，可能会导致死循环，具体的分析这里就不再展开了，想了解的同学可以看下这个博客：<a href="http://github.thinkingbar.com/hashmap-infinite-loop/" target="_blank" rel="external">HashMap 死循环分析</a>。<br>解决的方法也很简单，将原来非线程安全的HashMap替换成线程安全的ConcurrentHashMap就行了。</p>
-<p>解决后发布，并将错误原因和修复结果反馈给运维老湿，老湿夸奖了我的响应迅速~</p>
-<p>这个错误告诉我，不要用主观的猜测去多线程环境下代码的工作方式，只要是多线程，一定要使用线程安全的类。</p>
+        <p># </p>
 
       
 
@@ -239,7 +216,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2016/08/06/Java服务CPU飙到99-问题排查/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2017/07/09/2017-07-09/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -253,18 +230,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/07/08/Mysql-锁和事务/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          MySQL 锁和事务
-        
-      </div>
-    </a>
   
-  
-    <a href="/2016/07/24/java并发编程-Volatile变量/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Java并发编程——volatile变量</div>
+    <a href="/2017/07/08/Mysql-锁和事务/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">MySQL 锁和事务</div>
       <i class="icon-circle-right"></i>
     </a>
   
